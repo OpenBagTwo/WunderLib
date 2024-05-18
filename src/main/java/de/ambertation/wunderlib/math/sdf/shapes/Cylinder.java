@@ -1,6 +1,7 @@
 package de.ambertation.wunderlib.math.sdf.shapes;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.util.KeyDispatchDataCodec;
 
@@ -12,7 +13,7 @@ import de.ambertation.wunderlib.math.sdf.interfaces.Rotatable;
 // https://iquilezles.org/articles/distfunctions/
 public class Cylinder extends BaseShape implements Rotatable {
     public static final Transform DEFAULT_TRANSFORM = Transform.of(Float3.of(0, 0, 0), Float3.of(5, 8, 5));
-    public static final Codec<Cylinder> DIRECT_CODEC = RecordCodecBuilder.create(instance -> instance
+    public static final MapCodec<Cylinder> DIRECT_CODEC = RecordCodecBuilder.mapCodec(instance -> instance
             .group(
                     Transform.CODEC.fieldOf("transform").orElse(Transform.IDENTITY).forGetter(o -> o.transform),
                     Codec.INT.fieldOf("material").orElse(0).forGetter(BaseShape::getMaterialIndex)
@@ -20,10 +21,10 @@ public class Cylinder extends BaseShape implements Rotatable {
             .apply(instance, Cylinder::new)
     );
 
-    public static final KeyDispatchDataCodec<Cylinder> CODEC = KeyDispatchDataCodec.of(DIRECT_CODEC);
+    public static final MapCodec<Cylinder> CODEC = KeyDispatchDataCodec.of(DIRECT_CODEC).codec();
 
     @Override
-    public KeyDispatchDataCodec<? extends SDF> codec() {
+    public MapCodec<? extends SDF> codec() {
         return CODEC;
     }
 

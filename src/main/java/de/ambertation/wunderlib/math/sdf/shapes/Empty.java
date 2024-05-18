@@ -1,6 +1,9 @@
 package de.ambertation.wunderlib.math.sdf.shapes;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.Decoder;
+import com.mojang.serialization.Encoder;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.util.KeyDispatchDataCodec;
 
 import de.ambertation.wunderlib.math.Bounds;
@@ -10,14 +13,14 @@ import de.ambertation.wunderlib.math.sdf.SDF;
 
 public class Empty extends SDF {
     public static final Codec<Empty> DIRECT_CODEC = Codec.unit(Empty::new);
-    public static final KeyDispatchDataCodec<Empty> CODEC = KeyDispatchDataCodec.of(DIRECT_CODEC);
+    public static final MapCodec<Empty> CODEC = MapCodec.of(Encoder.empty(), Decoder.unit(Empty::new));
 
     public Empty() {
         super(0);
     }
 
     @Override
-    public KeyDispatchDataCodec<? extends SDF> codec() {
+    public MapCodec<? extends SDF> codec() {
         return CODEC;
     }
 

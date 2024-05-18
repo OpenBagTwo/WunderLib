@@ -1,5 +1,6 @@
 package de.ambertation.wunderlib.math.sdf;
 
+import com.mojang.serialization.MapCodec;
 import de.ambertation.wunderlib.WunderLib;
 import de.ambertation.wunderlib.math.Bounds;
 import de.ambertation.wunderlib.math.Float3;
@@ -11,6 +12,8 @@ import de.ambertation.wunderlib.math.sdf.shapes.*;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.MappedRegistry;
 import net.minecraft.core.Registry;
+import net.minecraft.core.WritableRegistry;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.KeyDispatchDataCodec;
 
 import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder;
@@ -309,17 +312,23 @@ public abstract class SDF {
     //---------------------- ABSTRACT METHODS ----------------------
 
     public abstract double dist(Float3 pos);
-    public abstract KeyDispatchDataCodec<? extends SDF> codec();
+    public abstract MapCodec<? extends SDF> codec();
 
 
     //---------------------- SDF REGISTRY ----------------------
-    public static final MappedRegistry<Codec<? extends SDF>> SDF_REGISTRY = FabricRegistryBuilder
-            .<Codec<? extends SDF>>createSimple(null, WunderLib.ID("sdf"))
+    public static final ResourceKey<Registry<Codec<? extends SDF>>> SDF_TYPE
+        = ResourceKey.createRegistryKey(WunderLib.ID("sdf"));
+
+    public static final WritableRegistry<Codec<? extends SDF>> SDF_REGISTRY = FabricRegistryBuilder
+            .createSimple(SDF_TYPE)
             .attribute(RegistryAttribute.MODDED)
             .buildAndRegister();
 
     public static final Codec<SDF> CODEC = SDF_REGISTRY.byNameCodec()
-                                                       .dispatch((sdf) -> sdf.codec().codec(), Function.identity());
+                                                       .dispatch(
+                                                           sdf -> ((SDF) sdf).codec().codec(),
+                                                           MapCodec::assumeMapUnsafe
+                                                       );
 
     static void bootstrap(Registry<Codec<? extends SDF>> registry) {
         register(registry, "union", SDFUnion.CODEC);
@@ -337,7 +346,7 @@ public abstract class SDF {
     static Codec<? extends SDF> register(
             Registry<Codec<? extends SDF>> registry,
             String name,
-            KeyDispatchDataCodec<? extends SDF> codec
+            MapCodec<? extends SDF> codec
     ) {
         return Registry.register(registry, WunderLib.ID(name), codec.codec());
     }

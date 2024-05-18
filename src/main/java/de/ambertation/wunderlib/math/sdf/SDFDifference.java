@@ -1,6 +1,7 @@
 package de.ambertation.wunderlib.math.sdf;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.util.KeyDispatchDataCodec;
 
@@ -8,7 +9,7 @@ import de.ambertation.wunderlib.math.Float3;
 import de.ambertation.wunderlib.math.Transform;
 
 public class SDFDifference extends SDFBinaryOperation {
-    public static final Codec<SDFDifference> DIRECT_CODEC = RecordCodecBuilder.create(instance -> instance
+    public static final MapCodec<SDFDifference> DIRECT_CODEC = RecordCodecBuilder.mapCodec(instance -> instance
             .group(
                     Transform.CODEC.fieldOf("transform").orElse(Transform.IDENTITY).forGetter(o -> o.transform),
                     SDF.CODEC.fieldOf("sdf_a").forGetter(b -> b.getFirst()),
@@ -17,10 +18,10 @@ public class SDFDifference extends SDFBinaryOperation {
             .apply(instance, SDFDifference::new)
     );
 
-    public static final KeyDispatchDataCodec<SDFDifference> CODEC = KeyDispatchDataCodec.of(DIRECT_CODEC);
+    public static final MapCodec<SDFDifference> CODEC = KeyDispatchDataCodec.of(DIRECT_CODEC).codec();
 
     @Override
-    public KeyDispatchDataCodec<? extends SDF> codec() {
+    public MapCodec<? extends SDF> codec() {
         return CODEC;
     }
 

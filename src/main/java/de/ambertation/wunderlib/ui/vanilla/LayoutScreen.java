@@ -132,7 +132,7 @@ public abstract class LayoutScreen extends Screen {
     }
 
     public void renderBackground(GuiGraphics guiGraphics, int i, int j, float f) {
-        renderDirtBackground(guiGraphics);
+        renderMenuBackground(guiGraphics);
     }
 
 
