@@ -9,6 +9,6 @@ public class WunderLib {
     public static final Logger LOGGER = new Logger();
 
     public static ResourceLocation ID(String path) {
-        return new ResourceLocation(MOD_ID, path);
+        return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
     }
 }
